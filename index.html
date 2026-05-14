@@ -108,6 +108,156 @@ body::before{
   background-size:150px;opacity:0.35;
 }
 
+.about-section {
+  max-width: 850px;
+  padding: 25px 30px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 10px 35px rgba(0, 0, 0, 0.08);
+  line-height: 1.9;
+  font-size: 16px;
+  color: #2d2d2d;
+  position: relative;
+  overflow: hidden;
+  animation: fadeUp 1s ease;
+  transition: all 0.4s ease;
+}
+
+.about-section:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.12);
+}
+
+.about-section::before {
+  content: "";
+  position: absolute;
+  width: 250px;
+  height: 250px;
+  background: rgba(13, 110, 253, 0.08);
+  border-radius: 50%;
+  top: -120px;
+  right: -120px;
+  z-index: 0;
+}
+
+.about-section p {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 18px;
+  animation: fadeIn 1.2s ease;
+}
+
+.about-section strong {
+  color: #0d6efd;
+  font-weight: 700;
+  transition: color 0.3s ease;
+}
+
+.about-section strong:hover {
+  color: #084298;
+}
+
+.more-bio {
+  margin-top: 18px;
+  position: relative;
+  z-index: 1;
+}
+
+.more-bio summary {
+  list-style: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 22px;
+  border-radius: 50px;
+  background: linear-gradient(135deg, #0d6efd, #4f8cff);
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  transition: all 0.4s ease;
+  user-select: none;
+  box-shadow: 0 8px 20px rgba(13, 110, 253, 0.25);
+}
+
+.more-bio summary::after {
+  content: "▼";
+  font-size: 12px;
+  transition: transform 0.4s ease;
+}
+
+.more-bio[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.more-bio summary:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 12px 25px rgba(13, 110, 253, 0.35);
+}
+
+.more-bio p {
+  margin-top: 18px;
+  padding: 18px;
+  border-left: 4px solid #0d6efd;
+  background: rgba(13, 110, 253, 0.04);
+  border-radius: 12px;
+  animation: slideDown 0.5s ease;
+}
+
+/* Animations */
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 500px;
+  }
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+  .about-section {
+    padding: 20px;
+    font-size: 15px;
+  }
+
+  .more-bio summary {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 /* ════════════════════════════════════════════
    THEME TOGGLE BUTTON
 ════════════════════════════════════════════ */
@@ -906,9 +1056,36 @@ footer p{font-family:'JetBrains Mono',monospace;font-size:.6rem;color:var(--fg-d
     <div class="ab-text">
       <div class="s-tag">Who am I</div>
       <h2 class="s-head">About<br><span class="hl">Me</span></h2>
-      <p>I'm a <strong>passionate developer</strong> with a strong foundation in Web and App Development. Holding a Bachelor's degree in Information &amp; Technology, I thrive on creating digital solutions that blend functionality with innovation.</p>
-      <p>My expertise lies in the <strong>Odoo Framework</strong>, where I've developed and customized ERP systems — School ERP, Payroll Management, Agriculture ERP — each designed to enhance efficiency and streamline operations.</p>
-      <p>I also wear creative hats as a <strong>singer, guitarist, and video editor</strong> — fueled by curiosity and the belief that every line of code should tell a story of elegance.</p>
+      <div class="about-section">
+  <p>
+    I'm a <strong>passionate developer</strong> with a strong foundation in 
+    <strong>Web, Software, and App Development</strong>. Holding a Bachelor's 
+    degree in Information &amp; Technology, I enjoy building modern digital 
+    solutions that combine functionality, creativity, and user-focused design.
+  </p>
+
+  <p>
+    My primary expertise lies in <strong>Website and Web Application Development</strong>, 
+    where I have developed multiple websites, business platforms, and custom 
+    web-based software solutions for different companies and organizations.
+  </p>
+
+  <details class="more-bio">
+    <summary>Read More</summary>
+
+    <p>
+      I also have experience working with the <strong>Odoo Framework</strong>, 
+      including ERP customization and development for systems such as School ERP, 
+      Payroll Management, and Agriculture ERP solutions.
+    </p>
+
+    <p>
+      Beyond development, I’m also a <strong>singer, guitarist, and video editor</strong> — 
+      driven by creativity and the belief that every project, whether code or art, 
+      should tell a meaningful story through both design and experience.
+    </p>
+  </details>
+</div>
       <div class="ab-stat-row">
         <div class="ab-stat"><strong>5+</strong><span>Years Coding</span></div>
         <div class="ab-stat"><strong>15+</strong><span>Projects Built</span></div>
@@ -1336,7 +1513,7 @@ draw();
 // ════════════════════════════════════════════
 // TYPEWRITER
 // ════════════════════════════════════════════
-const roles = ['Developer', 'Singer', 'Guitarist', 'Video Editor', 'ERP Specialist'];
+const roles = ['Developer (Web, Software, Odoo)', 'Singer', 'Guitarist', 'Video Editor', 'ERP Developer'];
 const tel = document.getElementById('typed');
 let ri = 0, ci = 0, del = false;
 function type() {
