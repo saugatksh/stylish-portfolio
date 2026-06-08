@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="DineX — Restaurant Management System by Saugat Bohara">
+<title>DineX · Restaurant Management System</title>
+<link rel="icon" href="assets/imgs/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Syne:wght@300;400;600&family=JetBrains+Mono:wght@300;400&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════
+   THEME TOKENS (match portfolio)
+═══════════════════════════ */
+:root { --transition-theme: background 0.55s ease, color 0.55s ease, border-color 0.55s ease, box-shadow 0.55s ease; }
+[data-theme="dark"] {
+  --bg:#03040a;--bg2:#07090f;--bg3:#0a0c16;
+  --fg:#e8f4f8;--fg-dim:rgba(232,244,248,0.45);--fg-hint:rgba(232,244,248,0.1);
+  --c:#00ffe7;--c2:#b44dff;
+  --c-glow:rgba(0,255,231,0.35);--c-glow2:rgba(180,77,255,0.35);
+  --border:rgba(0,255,231,0.12);--card:#07090f;--nav-bg:rgba(3,4,10,0.92);
+  --scanline:rgba(0,255,231,0.012);--grid:rgba(0,255,231,0.04);
+}
+[data-theme="light"] {
+  --bg:#f0f4f8;--bg2:#e4eaf2;--bg3:#dce4ee;
+  --fg:#0a0e1a;--fg-dim:rgba(10,14,26,0.55);--fg-hint:rgba(10,14,26,0.1);
+  --c:#0066cc;--c2:#7700cc;
+  --c-glow:rgba(0,102,204,0.3);--c-glow2:rgba(119,0,204,0.3);
+  --border:rgba(0,102,204,0.18);--card:#e4eaf2;--nav-bg:rgba(240,244,248,0.92);
+  --scanline:rgba(0,102,204,0.018);--grid:rgba(0,102,204,0.05);
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--fg);font-family:'Syne',sans-serif;font-weight:300;overflow-x:hidden;cursor:none;transition:var(--transition-theme);}
+body::after{content:'';position:fixed;inset:0;z-index:2;pointer-events:none;background:repeating-linear-gradient(0deg,transparent,transparent 2px,var(--scanline) 2px,var(--scanline) 4px);animation:scanMove 8s linear infinite;}
+@keyframes scanMove{from{background-position:0 0;}to{background-position:0 100px;}}
+body::before{content:'';position:fixed;inset:0;z-index:1;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");background-size:150px;opacity:0.35;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:20px 52px;display:flex;align-items:center;justify-content:space-between;transition:all .4s;background:var(--nav-bg);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
+.n-logo{font-family:'Orbitron',sans-serif;font-size:1.2rem;letter-spacing:.2em;color:var(--fg);text-decoration:none;display:flex;align-items:center;gap:4px;transition:color .4s;}
+.n-logo::before{content:'[';color:var(--c);font-size:1.4rem;}
+.n-logo::after{content:']';color:var(--c);font-size:1.4rem;}
+.n-back{font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--fg-dim);text-decoration:none;transition:color .2s;display:flex;align-items:center;gap:8px;}
+.n-back::before{content:'←';color:var(--c);}
+.n-back:hover{color:var(--c);}
+
+/* CURSOR */
+#cur{position:fixed;top:0;left:0;z-index:9999;pointer-events:none;}
+#cdot{width:6px;height:6px;background:var(--c);border-radius:50%;position:absolute;transform:translate(-50%,-50%);box-shadow:0 0 8px var(--c),0 0 20px var(--c-glow);transition:width .15s,height .15s;}
+#cring{width:38px;height:38px;border:1px solid var(--c);border-radius:50%;position:absolute;transform:translate(-50%,-50%);transition:width .3s,height .3s,border-color .25s;box-shadow:0 0 10px var(--c-glow);}
+body.hov #cdot{width:12px;height:12px;}
+body.hov #cring{width:56px;height:56px;}
+
+/* THEME TOGGLE */
+#theme-toggle{position:fixed;top:50%;right:0;transform:translateY(-50%);z-index:2000;width:42px;display:flex;flex-direction:column;align-items:center;gap:0;background:var(--card);border:1px solid var(--border);border-right:none;border-radius:8px 0 0 8px;padding:8px 6px;cursor:none;transition:var(--transition-theme),transform .3s;box-shadow:-2px 0 16px var(--c-glow);}
+#theme-toggle:hover{transform:translateY(-50%) translateX(-2px);}
+.tt-track{width:22px;height:44px;background:var(--fg-hint);border:1px solid var(--border);border-radius:12px;position:relative;transition:background .4s;margin-bottom:8px;}
+[data-theme="light"] .tt-track{background:rgba(0,102,204,0.15);}
+.tt-thumb{position:absolute;left:50%;transform:translateX(-50%);width:16px;height:16px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c-glow);top:3px;transition:top .4s cubic-bezier(.22,1,.36,1);}
+[data-theme="light"] .tt-thumb{top:calc(44px - 19px);}
+.tt-icon{font-size:.9rem;line-height:1;user-select:none;}
+.tt-icon.sun{color:#f5a623;margin-top:2px;}
+.tt-icon.moon{color:var(--c);margin-bottom:2px;}
+.tt-label{font-family:'JetBrains Mono',monospace;font-size:.42rem;letter-spacing:.12em;text-transform:uppercase;color:var(--fg-dim);writing-mode:vertical-rl;margin-top:6px;}
+
+/* HERO BANNER */
+.dx-hero{
+  min-height:55vh;display:flex;flex-direction:column;justify-content:flex-end;
+  padding:120px 52px 60px;position:relative;overflow:hidden;
+  background:var(--bg2);
+  border-bottom:1px solid var(--border);
+}
+.dx-hero-grid{position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 90% 90% at 50% 100%,black 20%,transparent 100%);}
+.dx-hero-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 60% at 50% 80%,var(--c-glow),transparent 70%);}
+.dx-tag{font-family:'JetBrains Mono',monospace;font-size:.6rem;letter-spacing:.28em;text-transform:uppercase;color:var(--c);margin-bottom:16px;display:flex;align-items:center;gap:10px;position:relative;z-index:2;}
+.dx-tag::before{content:'//';}
+.dx-hero-row{position:relative;z-index:2;}
+.dx-hero-title{font-family:'Orbitron',sans-serif;font-size:clamp(3rem,10vw,8rem);line-height:.88;letter-spacing:.04em;text-shadow:0 0 60px var(--c-glow);}
+.dx-hero-title .ac{color:var(--c);}
+.dx-logo-img{
+  position:absolute;
+  right:52px;
+  top:50%;
+  transform:translateY(-50%);
+  height:clamp(140px,18vw,240px);
+  width:auto;
+  max-width:300px;
+  object-fit:contain;
+  display:block;
+  z-index:2;
+  filter:drop-shadow(0 0 32px var(--c-glow)) drop-shadow(0 8px 24px rgba(0,0,0,.18));
+  animation:logoFloat 4s ease-in-out infinite;
+}
+@keyframes logoFloat{0%,100%{transform:translateY(-50%);}50%{transform:translateY(calc(-50% - 10px));}}
+.dx-hero-sub{font-family:'JetBrains Mono',monospace;font-size:.75rem;color:var(--fg-dim);letter-spacing:.14em;margin-top:20px;position:relative;z-index:2;}
+.dx-pills{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px;position:relative;z-index:2;}
+.dx-pill{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;padding:5px 14px;border:1px solid var(--border);border-radius:2px;color:var(--fg-dim);background:var(--fg-hint);}
+.dx-pill.ac{border-color:var(--c);color:var(--c);background:rgba(0,255,231,0.06);}
+@media(max-width:700px){.dx-logo-img{position:relative;right:auto;top:auto;transform:none;height:90px;margin-bottom:20px;animation:logoFloatMob 4s ease-in-out infinite;}@keyframes logoFloatMob{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}}
+
+/* STATS BAR */
+.dx-stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.dx-stat{padding:32px 52px;border-right:1px solid var(--border);text-align:center;}
+.dx-stat:last-child{border-right:none;}
+.dx-stat-num{font-family:'Orbitron',sans-serif;font-size:2.6rem;color:var(--c);text-shadow:0 0 20px var(--c-glow);line-height:1;}
+.dx-stat-lbl{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--fg-dim);margin-top:8px;}
+
+/* CONTENT */
+.dx-wrap{max-width:1100px;margin:0 auto;padding:80px 52px;}
+.dx-section{margin-bottom:80px;}
+.dx-s-tag{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:var(--c);display:flex;align-items:center;gap:8px;margin-bottom:12px;}
+.dx-s-tag::before{content:'//';}
+.dx-s-head{font-family:'Orbitron',sans-serif;font-size:clamp(1.8rem,4vw,3rem);margin-bottom:32px;line-height:1.05;}
+.dx-s-head .hl{color:var(--c);}
+.dx-body{color:var(--fg-dim);line-height:1.85;font-size:1rem;max-width:760px;}
+.dx-body p{margin-bottom:1.2em;}
+
+/* ROLE CARDS */
+.dx-roles{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:40px;}
+.dx-role{padding:24px 28px;border:1px solid var(--border);background:var(--bg2);border-radius:2px;transition:border-color .2s,box-shadow .2s;}
+.dx-role:hover{border-color:var(--c);box-shadow:0 0 20px var(--c-glow);}
+.dx-role-icon{font-size:1.5rem;margin-bottom:10px;}
+.dx-role-title{font-family:'Orbitron',sans-serif;font-size:.85rem;letter-spacing:.1em;color:var(--c);margin-bottom:8px;}
+.dx-role-desc{font-family:'Syne',sans-serif;font-size:.9rem;color:var(--fg-dim);line-height:1.65;}
+
+/* FEATURE GRID */
+.dx-features{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);margin-top:40px;}
+.dx-feat{background:var(--bg);padding:24px 28px;}
+.dx-feat-num{font-family:'Orbitron',sans-serif;font-size:.65rem;color:var(--c);opacity:.4;margin-bottom:8px;}
+.dx-feat-title{font-family:'Orbitron',sans-serif;font-size:.8rem;letter-spacing:.06em;margin-bottom:8px;}
+.dx-feat-desc{font-size:.85rem;color:var(--fg-dim);line-height:1.6;}
+
+/* PLAN TABLE */
+.dx-plans{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px;}
+.dx-plan{border:1px solid var(--border);padding:32px 28px;position:relative;transition:border-color .25s,box-shadow .25s;}
+.dx-plan:hover{border-color:var(--c);box-shadow:0 0 32px var(--c-glow);}
+.dx-plan.featured{border-color:var(--c2);box-shadow:0 0 24px var(--c-glow2);}
+.dx-plan-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);font-family:'JetBrains Mono',monospace;font-size:.5rem;letter-spacing:.2em;text-transform:uppercase;padding:4px 14px;background:var(--c2);color:var(--bg);white-space:nowrap;}
+.dx-plan-name{font-family:'Orbitron',sans-serif;font-size:1.1rem;letter-spacing:.12em;margin-bottom:8px;}
+.dx-plan-price{font-family:'Orbitron',sans-serif;font-size:1.8rem;color:var(--c);margin-bottom:4px;}
+.dx-plan.featured .dx-plan-price{color:var(--c2);}
+.dx-plan-period{font-family:'JetBrains Mono',monospace;font-size:.55rem;color:var(--fg-dim);letter-spacing:.12em;margin-bottom:24px;}
+.dx-plan-feature{font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.1em;color:var(--fg-dim);padding:6px 0;border-bottom:1px solid var(--fg-hint);display:flex;align-items:center;gap:8px;}
+.dx-plan-feature::before{content:'✓';color:var(--c);font-size:.7rem;}
+.dx-plan.featured .dx-plan-feature::before{color:var(--c2);}
+
+/* FLOW STEPS */
+.dx-steps{counter-reset:step;display:flex;flex-direction:column;gap:0;margin-top:40px;}
+.dx-step{counter-increment:step;display:grid;grid-template-columns:48px 1fr;gap:24px;padding:24px 0;border-bottom:1px solid var(--fg-hint);position:relative;align-items:start;}
+.dx-step-num{font-family:'Orbitron',sans-serif;font-size:1.4rem;color:var(--c);opacity:.35;line-height:1;text-shadow:0 0 16px var(--c-glow);}
+.dx-step-num::before{content:counter(step,decimal-leading-zero);}
+.dx-step-body{}
+.dx-step-title{font-family:'Orbitron',sans-serif;font-size:.85rem;letter-spacing:.08em;margin-bottom:6px;}
+.dx-step-desc{font-size:.9rem;color:var(--fg-dim);line-height:1.65;}
+
+/* CTA BLOCK */
+.dx-cta{
+  background:var(--bg2);border:1px solid var(--border);
+  padding:60px 52px;text-align:center;margin-top:40px;
+  position:relative;overflow:hidden;
+}
+.dx-cta::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 60% 60% at 50% 50%,var(--c-glow),transparent 70%);opacity:.3;}
+.dx-cta-title{font-family:'Orbitron',sans-serif;font-size:clamp(1.5rem,4vw,2.8rem);margin-bottom:16px;position:relative;z-index:1;}
+.dx-cta-sub{font-family:'JetBrains Mono',monospace;font-size:.7rem;letter-spacing:.14em;color:var(--fg-dim);margin-bottom:40px;position:relative;z-index:1;}
+.dx-btns{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;position:relative;z-index:1;}
+.dx-btn{
+  display:inline-flex;align-items:center;gap:10px;
+  font-family:'JetBrains Mono',monospace;font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;
+  padding:14px 28px;text-decoration:none;cursor:none;border:none;
+  transition:all .25s;
+}
+.dx-btn.primary{background:var(--c);color:var(--bg);box-shadow:0 0 24px var(--c-glow);}
+.dx-btn.primary:hover{box-shadow:0 0 40px var(--c-glow),0 0 80px var(--c-glow);transform:translateY(-2px);}
+.dx-btn.secondary{background:transparent;color:var(--c);border:1px solid var(--c);}
+.dx-btn.secondary:hover{background:rgba(0,255,231,0.08);box-shadow:0 0 20px var(--c-glow);transform:translateY(-2px);}
+.dx-btn.gmail{background:var(--c2);color:#fff;box-shadow:0 0 24px var(--c-glow2);}
+.dx-btn.gmail:hover{box-shadow:0 0 40px var(--c-glow2);transform:translateY(-2px);}
+
+/* NOTIFICATION STRIP */
+.dx-note{
+  background:rgba(0,255,231,0.05);border-left:3px solid var(--c);
+  padding:16px 24px;
+  font-family:'JetBrains Mono',monospace;font-size:.62rem;letter-spacing:.1em;color:var(--fg-dim);
+  margin-top:24px;
+}
+[data-theme="light"] .dx-note{background:rgba(0,102,204,0.05);border-color:var(--c);}
+
+/* KITCHEN STATUS TABLE */
+.dx-table{width:100%;border-collapse:collapse;margin-top:24px;}
+.dx-table th{font-family:'JetBrains Mono',monospace;font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--c);padding:12px 16px;text-align:left;border-bottom:1px solid var(--border);}
+.dx-table td{padding:12px 16px;font-size:.88rem;color:var(--fg-dim);border-bottom:1px solid var(--fg-hint);}
+.dx-table tr:hover td{color:var(--fg);background:var(--fg-hint);}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;}
+.status-dot.yellow{background:#f5c842;box-shadow:0 0 6px #f5c842;}
+.status-dot.blue{background:#4da6ff;box-shadow:0 0 6px #4da6ff;}
+.status-dot.green{background:#00ff88;box-shadow:0 0 6px #00ff88;}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  .dx-hero{padding:100px 24px 48px;}
+  .dx-wrap{padding:60px 24px;}
+  .dx-stats{grid-template-columns:repeat(2,1fr);}
+  .dx-roles{grid-template-columns:1fr;}
+  .dx-features{grid-template-columns:1fr;}
+  .dx-plans{grid-template-columns:1fr;}
+  .dx-cta{padding:40px 24px;}
+  nav{padding:16px 24px;}
+  .dx-stat{padding:24px 20px;}
+}
+
+/* PROGRESS BAR */
+#prog{position:fixed;top:0;left:0;height:2px;z-index:1001;background:linear-gradient(90deg,var(--c),var(--c2));box-shadow:0 0 8px var(--c);width:0;transition:width .08s;}
+
+/* FADE-UP */
+.fu{opacity:0;transform:translateY(28px);transition:opacity .7s ease,transform .7s ease;}
+.fu.vis{opacity:1;transform:translateY(0);}
+
+
+</style>
+</head>
+<body>
+
+<div id="cur"><div id="cdot"></div><div id="cring"></div></div>
+<div id="prog"></div>
+
+<!-- THEME TOGGLE -->
+<div id="theme-toggle" aria-label="Toggle theme">
+  <span class="tt-icon sun">☀</span>
+  <div class="tt-track"><div class="tt-thumb"></div></div>
+  <span class="tt-icon moon">☽</span>
+  <span class="tt-label">theme</span>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a class="n-logo" href="index.html">SB</a>
+  <a class="n-back" href="index.html">Back to Portfolio</a>
+</nav>
+
+<!-- HERO -->
+<section class="dx-hero">
+  <div class="dx-hero-grid"></div>
+  <div class="dx-hero-glow"></div>
+  <img src="assets/imgs/dinex-logo.png" alt="DineX Logo" class="dx-logo-img" onerror="this.style.display='none'">
+  <div class="dx-tag">Project / Restaurant Management System</div>
+  <h1 class="dx-hero-title">Dine<span class="ac">X</span></h1>
+  <p class="dx-hero-sub">// Cloud-based · Real-time · Multi-role · 3 Plans · 27+ Features</p>
+  <div class="dx-pills">
+    <span class="dx-pill ac">Restaurant-POS</span>
+    <span class="dx-pill">Web App</span>
+    <span class="dx-pill">Real-time</span>
+    <span class="dx-pill">Multi-role</span>
+    <span class="dx-pill">Nepal 🇳🇵</span>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="dx-stats">
+  <div class="dx-stat fu"><div class="dx-stat-num">4</div><div class="dx-stat-lbl">Panels</div></div>
+  <div class="dx-stat fu"><div class="dx-stat-num">3</div><div class="dx-stat-lbl">Plans</div></div>
+  <div class="dx-stat fu"><div class="dx-stat-num">27+</div><div class="dx-stat-lbl">Features</div></div>
+  <div class="dx-stat fu"><div class="dx-stat-num">∞</div><div class="dx-stat-lbl">Pro Limits</div></div>
+</div>
+
+<div class="dx-wrap">
+
+  <!-- OVERVIEW -->
+  <section class="dx-section fu">
+    <div class="dx-s-tag">Overview</div>
+    <h2 class="dx-s-head">What is <span class="hl">DineX</span>?</h2>
+    <div class="dx-body">
+      <p>DineX is a complete, cloud-based restaurant management system designed for restaurants of all sizes — from a small café to a multi-floor dining establishment. It connects every part of your operation in a single seamless, real-time platform.</p>
+      <p>From the moment a customer sits down, to the kitchen preparing food, to the cash counter settling the bill — every handoff is automated, tracked, and visible to the right people at the right time. No paper slips, no miscommunication, no guesswork.</p>
+    </div>
+
+    <div class="dx-roles">
+      <div class="dx-role">
+        <div class="dx-role-icon">🛡</div>
+        <div class="dx-role-title">Admin</div>
+        <div class="dx-role-desc">Full control — manages menu, staff, tables, finances, analytics, and settings. The restaurant's command center.</div>
+      </div>
+      <div class="dx-role">
+        <div class="dx-role-icon">🧑‍🍽</div>
+        <div class="dx-role-title">Waiter Panel</div>
+        <div class="dx-role-desc">Takes orders on any tablet or phone, browses the live menu by category, and dispatches rounds directly to the kitchen or bar with one tap.</div>
+      </div>
+      <div class="dx-role">
+        <div class="dx-role-icon">🍳</div>
+        <div class="dx-role-title">Kitchen / Bar</div>
+        <div class="dx-role-desc">Live order display board — receives orders in seconds, tracks preparation status, and signals when dishes are ready. Auto-refreshes every 8 seconds.</div>
+      </div>
+      <div class="dx-role">
+        <div class="dx-role-icon">💰</div>
+        <div class="dx-role-title">Cash Counter</div>
+        <div class="dx-role-desc">Generates itemized bills with 13% VAT, applies discounts (preset 5–50%), processes cash or QR payments, and optionally sends bills via WhatsApp.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES -->
+  <section class="dx-section fu">
+    <div class="dx-s-tag">Features</div>
+    <h2 class="dx-s-head">27+ <span class="hl">Capabilities</span></h2>
+    <div class="dx-features">
+      <div class="dx-feat"><div class="dx-feat-num">01</div><div class="dx-feat-title">Live Order Board</div><div class="dx-feat-desc">Orders appear on the kitchen screen within seconds of being placed — no manual refresh needed.</div></div>
+      <div class="dx-feat"><div class="dx-feat-num">02</div><div class="dx-feat-title">Smart Insights & AI Analytics</div><div class="dx-feat-desc">AI-driven observations: best sellers, slowest items, peak hours, and weekly action items sorted by urgency.</div></div>
+      <div class="dx-feat"><div class="dx-feat-num">03</div><div class="dx-feat-title">Inventory Management</div><div class="dx-feat-desc">Track stock with auto-sync on orders. Low-stock alerts fire automatically before you run out.</div></div>
+      <div class="dx-feat"><div class="dx-feat-num">04</div><div class="dx-feat-title">Income & Expenditure P&L</div><div class="dx-feat-desc">Daily and monthly profit/loss view with configurable VAT rate. Export to CSV in one click.</div></div>
+      <div class="dx-feat"><div class="dx-feat-num">05</div><div class="dx-feat-title">Credit Payment Tracking</div><div class="dx-feat-desc">Log pay-later orders, track overdue amounts, and mark accounts settled when payment arrives.</div></div>
+      <div class="dx-feat"><div class="dx-feat-num">06</div><div class="dx-feat-title">Staff Attendance</div><div class="dx-feat-desc">Login marks attendance, logout records departure. No manual entry — fully automatic.</div></div>
+      <div class="dx-feat"><div class="dx-feat-num">07</div><div class="dx-feat-title">Daily Specials</div><div class="dx-feat-desc">Highlight dishes with a promo price and star badge on the Waiter Panel — drive upsell on demand.</div></div>
+      <div class="dx-feat"><div class="dx-feat-num">08</div><div class="dx-feat-title">Waste Log</div><div class="dx-feat-desc">Track food waste by item, reason, and estimated cost. Review monthly trends to cut losses.</div></div>
+      <div class="dx-feat"><div class="dx-feat-num">09</div><div class="dx-feat-title">WhatsApp Billing</div><div class="dx-feat-desc">Send the itemized bill summary directly to a customer's WhatsApp number at checkout.</div></div>
+    </div>
+  </section>
+
+  <!-- KITCHEN STATUS -->
+  <section class="dx-section fu">
+    <div class="dx-s-tag">Kitchen Workflow</div>
+    <h2 class="dx-s-head">Order <span class="hl">Status Flow</span></h2>
+    <div class="dx-body"><p>Every order moves through a clear visual pipeline in the Kitchen/Bar Panel. Staff know exactly what to do at a glance — no verbal communication required.</p></div>
+    <table class="dx-table">
+      <thead><tr><th>Status</th><th>Color</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><span class="status-dot yellow"></span>Pending</td><td>Yellow</td><td>New order received, preparation not yet started</td></tr>
+        <tr><td><span class="status-dot blue"></span>Preparing</td><td>Blue</td><td>Kitchen has started working on the order</td></tr>
+        <tr><td><span class="status-dot green"></span>Ready</td><td>Green</td><td>Dish is ready — waiter is notified to serve</td></tr>
+      </tbody>
+    </table>
+    <div class="dx-note">// Orders waiting more than 15 minutes are auto-flagged as URGENT. The panel auto-refreshes every 8 seconds — always current, no manual reload needed.</div>
+  </section>
+
+  <!-- GETTING STARTED -->
+  <section class="dx-section fu">
+    <div class="dx-s-tag">Getting Started</div>
+    <h2 class="dx-s-head">Up &amp; Running in <span class="hl">Minutes</span></h2>
+    <div class="dx-steps">
+      <div class="dx-step"><div class="dx-step-num"></div><div class="dx-step-body"><div class="dx-step-title">Contact DineX &amp; Choose a Plan</div><div class="dx-step-desc">Select Starter, Business, or Pro based on your restaurant size. Receive Admin credentials instantly.</div></div></div>
+      <div class="dx-step"><div class="dx-step-num"></div><div class="dx-step-body"><div class="dx-step-title">Log In to the Admin Panel</div><div class="dx-step-desc">Go to the Admin login page, enter your credentials, and land directly on the full Dashboard.</div></div></div>
+      <div class="dx-step"><div class="dx-step-num"></div><div class="dx-step-body"><div class="dx-step-title">Add Tables &amp; Build Your Menu</div><div class="dx-step-desc">Configure floors/sections with seating capacity; add menu items by category or bulk-upload via CSV template.</div></div></div>
+      <div class="dx-step"><div class="dx-step-num"></div><div class="dx-step-body"><div class="dx-step-title">Create Staff Accounts</div><div class="dx-step-desc">Add Waiter, Kitchen, Cash Counter, and Admin accounts with a click. Each logs in with their own credentials.</div></div></div>
+      <div class="dx-step"><div class="dx-step-num"></div><div class="dx-step-body"><div class="dx-step-title">Go Live!</div><div class="dx-step-desc">Share credentials with your team. Waiter → main URL | Kitchen → /kitchen | Cash Counter → /cash-counter | Admin → /admin/login.</div></div></div>
+    </div>
+  </section>
+
+  <!-- PLANS -->
+  <section class="dx-section fu">
+    <div class="dx-s-tag">Pricing</div>
+    <h2 class="dx-s-head">Subscription <span class="hl">Plans</span></h2>
+    <div class="dx-plans">
+      <div class="dx-plan">
+        <div class="dx-plan-name">Starter</div>
+        <div class="dx-plan-price">Rs. 10,000</div>
+        <div class="dx-plan-period">// per year</div>
+        <div class="dx-plan-feature">Up to 25 tables</div>
+        <div class="dx-plan-feature">6 staff accounts</div>
+        <div class="dx-plan-feature">600 menu dishes</div>
+        <div class="dx-plan-feature">Full POS core</div>
+        <div class="dx-plan-feature">13% VAT billing</div>
+        <div class="dx-plan-feature">Daily sales report</div>
+        <div class="dx-plan-feature">Dark / Light mode</div>
+      </div>
+      <div class="dx-plan featured">
+        <div class="dx-plan-badge">Most Popular</div>
+        <div class="dx-plan-name">Business</div>
+        <div class="dx-plan-price">Rs. 20,000</div>
+        <div class="dx-plan-period">// per year</div>
+        <div class="dx-plan-feature">Up to 50 tables</div>
+        <div class="dx-plan-feature">25 staff accounts</div>
+        <div class="dx-plan-feature">1,000 menu dishes</div>
+        <div class="dx-plan-feature">WhatsApp billing</div>
+        <div class="dx-plan-feature">Daily Specials</div>
+        <div class="dx-plan-feature">Staff Attendance</div>
+        <div class="dx-plan-feature">Insights &amp; Analytics</div>
+        <div class="dx-plan-feature">Expense Tracking</div>
+        <div class="dx-plan-feature">Income &amp; P&amp;L reports</div>
+      </div>
+      <div class="dx-plan">
+        <div class="dx-plan-name">Pro</div>
+        <div class="dx-plan-price">Rs. 40,000</div>
+        <div class="dx-plan-period">// per year</div>
+        <div class="dx-plan-feature">Unlimited tables</div>
+        <div class="dx-plan-feature">Unlimited staff</div>
+        <div class="dx-plan-feature">Unlimited dishes</div>
+        <div class="dx-plan-feature">Everything in Business</div>
+        <div class="dx-plan-feature">Inventory Management</div>
+        <div class="dx-plan-feature">Daily Stock Log</div>
+        <div class="dx-plan-feature">Inventory Auto-Sync</div>
+        <div class="dx-plan-feature">Waste Log Tracking</div>
+        <div class="dx-plan-feature">Priority Support</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="dx-section fu">
+    <div class="dx-cta">
+      <h2 class="dx-cta-title">Interested in <span style="color:var(--c)">DineX</span>?</h2>
+      <p class="dx-cta-sub">// Download the full documentation · Request a demo · Or reach out directly</p>
+      <div class="dx-btns">
+        <a class="dx-btn primary" href="DineX_Documentation.pdf" download="DineX_Documentation.pdf">
+          ↓ Download Documentation
+        </a>
+        <a class="dx-btn gmail" href="mailto:saugatbohara108@gmail.com?subject=DineX%20Demo%20Request&body=Hi%20Saugat%2C%0A%0AI%20am%20interested%20in%20a%20demo%20of%20DineX.%0A%0ARestaurant%20Name%3A%20%0AContact%20Number%3A%20%0APlan%20interested%20in%3A%20">
+          ✉ Request Demo / Full Access
+        </a>
+        <a class="dx-btn secondary" href="mailto:saugatbohara108@gmail.com?subject=DineX%20Enquiry">
+          Contact via Gmail
+        </a>
+      </div>
+      <p style="margin-top:28px;font-family:'JetBrains Mono',monospace;font-size:.58rem;letter-spacing:.12em;color:var(--fg-dim);">saugatbohara108@gmail.com · dinex.restaurant</p>
+    </div>
+  </section>
+
+</div><!-- /dx-wrap -->
+
+<script>
+// CURSOR
+const cur=document.getElementById('cur'),dot=document.getElementById('cdot'),ring=document.getElementById('cring');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;dot.style.left=mx+'px';dot.style.top=my+'px';});
+(function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);})();
+document.querySelectorAll('a,button,[role=button]').forEach(el=>{
+  el.addEventListener('mouseenter',()=>document.body.classList.add('hov'));
+  el.addEventListener('mouseleave',()=>document.body.classList.remove('hov'));
+});
+
+// THEME
+const html=document.documentElement;
+const savedTheme=localStorage.getItem('dinex-theme')||'light';
+html.setAttribute('data-theme',savedTheme);
+document.getElementById('theme-toggle').addEventListener('click',()=>{
+  const t=html.getAttribute('data-theme')==='dark'?'light':'dark';
+  html.setAttribute('data-theme',t);
+  localStorage.setItem('dinex-theme',t);
+});
+
+// PROGRESS BAR
+const prog=document.getElementById('prog');
+window.addEventListener('scroll',()=>{
+  const s=document.documentElement.scrollTop;
+  const h=document.documentElement.scrollHeight-window.innerHeight;
+  prog.style.width=(s/h*100)+'%';
+});
+
+// SCROLL REVEAL
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('vis');}),{threshold:.1});
+document.querySelectorAll('.fu').forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
